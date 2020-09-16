@@ -1,0 +1,13 @@
+<RCC>
+    <qresource prefix="/new/prefix1">
+        <file>sound/chessone.wav</file>
+        <file>sound/lose.wav</file>
+        <file>sound/win.wav</file>
+        <file>sound/start.wav</file>
+        <file>Image/title.png</file>
+        <file>Image/logo.png</file>
+    </qresource>
+    <qresource prefix="/">
+        <file>sound/enderdz.wav</file>
+    </qresource>
+</RCC>

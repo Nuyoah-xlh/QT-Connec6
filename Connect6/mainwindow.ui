@@ -23,6 +23,12 @@
       <height>28</height>
      </rect>
     </property>
+    <property name="font">
+     <font>
+      <family>Agency FB</family>
+      <pointsize>14</pointsize>
+     </font>
+    </property>
     <property name="text">
      <string>PushButton</string>
     </property>

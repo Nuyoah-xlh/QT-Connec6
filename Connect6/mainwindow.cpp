@@ -23,6 +23,7 @@
 #define WIN_SOUND  ":/new/prefix1/sound/win.wav"   //获胜提示音路径
 #define LOSE_SOUND ":/new/prefix1/sound/lose.wav"   //失败提示音路径
 #define BACK_SOUND  "://sound/enderdz.wav"   //背景音乐路径
+#define BACK_PNG  ":/new/prefix1/image/7.png"  //背景图片路径
 
 const int chessboard_size=21;  //棋盘线条数
 const int boundary=40;  //棋盘距离边缘的距离
@@ -30,9 +31,7 @@ const int square_length=40;  //棋盘格子大小
 const int mouseOk=20; //鼠标的有效点击距离
 const int flag_length=10; //落子标记边长
 const int r=17; //棋子半径
-const int ai_time=600;  //模拟ai思考时间
-
-
+const int ai_time=700;  //模拟ai思考时间
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -42,13 +41,29 @@ MainWindow::MainWindow(QWidget *parent) :
     this->setFixedSize(2*boundary+(chessboard_size-1)*square_length+400,2*boundary+(chessboard_size-1)*square_length);
     this->setWindowIcon(QPixmap(":/new/prefix1/Image/logo.png")); //设置应用图标
     ui->pushButton->setText("双人对决");
+    ui->pushButton->setFont(QFont("微软雅黑",10,700));
     ui->pushButton->setGeometry(1000,200,200,60); //设置按钮位置和尺寸
     ui->pushButton_2->setText("人机对战");
     ui->pushButton_2->setGeometry(1000,400,200,60);
+    ui->pushButton_2->setFont(QFont("微软雅黑",10,700));
     ui->pushButton_3->setText("智能对决");
     ui->pushButton_3->setGeometry(1000,600,200,60);
+    ui->pushButton_3->setFont(QFont("微软雅黑",10,700));
+    ui->pushButton->setFlat(true);  //设置按钮透明
+    ui->pushButton_2->setFlat(true);
+    ui->pushButton_3->setFlat(true);
     QMenuBar *menubar=menuBar();  //设置菜单栏
     QMenu *menu_1=menubar->addMenu("六子棋"); //设置菜单
+    QAction *action_0=menu_1->addAction("游戏简介");
+    QString str_0=  "游戏简介：\n"
+                    "    此游戏名为《六子棋》，规则与五子棋类似，详情见“规则介绍”。支持双人对战、人机对战、机机对战三种模式。"
+                    "熟悉QT5的使用，提高编程能力是设计该游戏的初衷。";
+    connect(action_0,QAction::triggered,
+            [=]()
+            {
+                QMessageBox::about(this,"游戏简介",str_0);
+            }
+            );
     QAction *action_1=menu_1->addAction("规则介绍");  //菜单下的按钮
     QString str=          "规则:\n"
                            "1.对峙双方谁的六个棋子先连在一条线即为胜者。\n"
@@ -69,12 +84,12 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(action_3,QAction::triggered,
             [=]()
             {
-               QMessageBox::about(this,"版本介绍","版本号：001");
+               QMessageBox::about(this,"版本介绍","版本号：1.0");
             }
             );
     QAction *action_4=menu_2->addAction("关于作者");
     QString str2="学号：919106840638\n"
-                 "Github:...";
+                 "Github:https://github.com/13243129626/Qt-";
     connect(action_4,QAction::triggered,
             [=]()
             {
@@ -100,8 +115,32 @@ MainWindow::~MainWindow()
 }
 void MainWindow::paintEvent(QPaintEvent *)
 {
+    if(ui->pushButton->underMouse())
+    {
+        ui->pushButton->setFlat(false);
+    }
+    else
+    {
+        ui->pushButton->setFlat(true);
+    }
+    if(ui->pushButton_2->underMouse())
+    {
+        ui->pushButton_2->setFlat(false);
+    }
+    else
+    {
+        ui->pushButton_2->setFlat(true);
+    }
+    if(ui->pushButton_3->underMouse())
+    {
+        ui->pushButton_3->setFlat(false);
+    }
+    else
+    {
+        ui->pushButton_3->setFlat(true);
+    }
     QPainter painter(this); //画家
-    painter.drawPixmap(0,0,this->width(),this->height(),QPixmap("../image/background.png"));
+    painter.drawPixmap(0,0,this->width(),this->height(),QPixmap(BACK_PNG));
     painter.setRenderHint(QPainter::Antialiasing, true); // 抗锯齿,防止图像走样
     QPen pen; //画笔
     pen.setWidth(2);  //画笔的线条宽度
@@ -150,10 +189,7 @@ void MainWindow::paintEvent(QPaintEvent *)
                 painter.setBrush(brush);
                 painter.drawEllipse(QPoint(boundary + square_length * i ,boundary + square_length * j),r,r);
             }
-
         }
-
-
     }
 
 
@@ -164,17 +200,15 @@ void MainWindow::paintEvent(QPaintEvent *)
 
 void MainWindow::initgame()   //初始化
 {
-    if(game)
-    {
         game=new Game;
-    }
-
-
 }
 void MainWindow::init(char type)
 {
+    game=new Game;
     game->game_type=type;
     game->state=1;
+    clickPosX=-1;
+    clickPosY=-1;
     game->startgame(type);
     update();
 }
@@ -183,6 +217,31 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
     //this->setMouseTracking(true);
     int x=event->x();
     int y=event->y();
+    //qDebug()<<x<<y;
+    if(x>=1000&&x<=1200&&y>=200&&y<=260)
+    {
+        ui->pushButton->setFlat(false);
+    }
+    else
+    {
+        ui->pushButton->setFlat(true);
+    }
+    if(x>=1000&&x<=1200&&y>=400&&y<=460)
+    {
+        ui->pushButton->setFlat(false);
+    }
+    else
+    {
+        ui->pushButton->setFlat(true);
+    }
+    if(x>=1000&&x<=1200&&y>=600&&y<=660)
+    {
+        ui->pushButton->setFlat(false);
+    }
+    else
+    {
+        ui->pushButton->setFlat(true);
+    }
     //qDebug()<<x<<" "<<y;
     //保证鼠标在有效范围内,且棋盘边缘不落子
     if (x >= boundary-mouseOk  &&
@@ -231,12 +290,15 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
         }
 
     }
+        update();
+
+}
     //qDebug()<<clickPosX<<" "<<clickPosY;
 
     // 存了坐标后更新界面
-    update();
 
-}
+
+
 void MainWindow::mouseReleaseEvent(QMouseEvent *event)
 {
 
@@ -253,58 +315,12 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event)
               QTimer::singleShot(ai_time, this, SLOT(playByAI()));
           }
       }
-      if(clickPosX>=0&&clickPosX<chessboard_size&&clickPosY>=0&&clickPosY<chessboard_size&&game->board[clickPosX][clickPosY]!=0) //判断游戏输赢
-      {
-          if(game->board[clickPosX][clickPosY]==1&&game->isJinShou(clickPosX,clickPosY)&&game->state==1)  //判断黑棋落子是否禁手
-          {
-              QMessageBox::StandardButton standar=QMessageBox::information(this,"游戏结束！","禁手！ White-player win！\n 点击Ok返回主界面！",QMessageBox::Ok);
-              if(standar==QMessageBox::Ok)
-              {
-                  game->state=0;
-                  game->clear();
-                  ui->pushButton->setText("双人对决");
-                  ui->pushButton_2->setText("人机对决");
-              }
-          }
-          else if(game->isWin(clickPosX,clickPosY)==true&&game->state==1)  //弹出提示框
-          {
 
-              QSound::play(WIN_SOUND);  //获胜提示音
-              QString string;
-              if(game->board[clickPosX][clickPosY]==1)
-              {
-                  string="Black-player win!";   //黑棋胜
-              }
-              else
-              {
-                  string="White-player win!";  //白棋胜
-              }
-              QMessageBox::StandardButton standarbutton=QMessageBox::information(this," 游戏结束！",string+"\n"+" 点击 Ok 返回主界面!",QMessageBox::Ok);
-              if(standarbutton==QMessageBox::Ok)
-              {
-                  game->state=0;
-                  game->clear();
-                  ui->pushButton->setText("双人对决");
-              }
-          }
-          else if(game->isHeQi()&&game->state==1)
-          {
-              game->state=0;
-              QMessageBox::StandardButton standarbutton=QMessageBox::information(this,"游戏结束！","该局和棋啦！\n 点击Ok返回主界面",QMessageBox::Ok);
-              if(standarbutton==QMessageBox::Ok)
-              {
-                  game->state=0;
-                  game->clear();
-                  ui->pushButton->setText("双人对决");
-              }
-          }
-      }
 
+      update();
      //人操作
        //qDebug()<<clickPosX<<" "<<clickPosY<<endl;
        //qDebug()<<game->board[clickPosX*chessboard_size+clickPosY];
-
-
 
 }
 void MainWindow::playByPerson()
@@ -314,40 +330,130 @@ void MainWindow::playByPerson()
     {
         game->actionByPerson(clickPosX,clickPosY); //人进行下棋
         QSound::play(CHESS_PLAY);  //设置落子提示音
+        isEnd();
         update(); //更新界面
     }
-
 }
 void MainWindow::playByAI()
 {
-    game->actionByAI(clickPosX,clickPosY);
+    game->actionByAI(clickPosX,clickPosY);  //落子
     QSound::play(CHESS_PLAY);
+    isEnd();  //判断输赢
     update();
 }
+void MainWindow::isEnd()
+{
+    if(clickPosX>=0&&clickPosX<chessboard_size&&clickPosY>=0&&clickPosY<chessboard_size&&game->board[clickPosX][clickPosY]!=0) //判断游戏输赢
+    {
+        if(game->board[clickPosX][clickPosY]==1&&game->isJinShou(clickPosX,clickPosY)&&game->state==1)  //判断黑棋落子是否禁手
+        {
+            QMessageBox::StandardButton standar=QMessageBox::information(this,"游戏结束！","禁手！ White-player win！\n 点击Ok返回主界面！",QMessageBox::Ok);
+            if(standar==QMessageBox::Ok)
+            {
+                game->state=0;
+                game->clear();
+                ui->pushButton->setText("双人对决");
+                ui->pushButton_2->setText("人机对决");
+                ui->pushButton_3->setText("智能对决");
+            }
+        }
+        else if(game->isWin(clickPosX,clickPosY)==true&&game->state==1)  //弹出提示框
+        {
 
+            QSound::play(WIN_SOUND);  //获胜提示音
+            QString string;
+            if(game->board[clickPosX][clickPosY]==1)
+            {
+                string="Black-player win!";   //黑棋胜
+            }
+            else
+            {
+                string="White-player win!";  //白棋胜
+            }
+            QMessageBox::StandardButton standarbutton=QMessageBox::information(this," 游戏结束！",string+"\n"+" 点击 Ok 返回主界面!",QMessageBox::Ok);
+            if(standarbutton==QMessageBox::Ok)
+            {
+                game->state=0;
+                game->clear();
+                ui->pushButton->setText("双人对决");
+                ui->pushButton_2->setText("人机对决");
+                ui->pushButton_3->setText("智能对决");
+            }
+        }
+        else if(game->isHeQi()&&game->state==1)
+        {
+            game->state=0;
+            QMessageBox::StandardButton standarbutton=QMessageBox::information(this,"游戏结束！","该局和棋啦！\n 点击Ok返回主界面",QMessageBox::Ok);
+            if(standarbutton==QMessageBox::Ok)
+            {
+                game->state=0;
+                game->clear();
+                ui->pushButton->setText("双人对决");
+                ui->pushButton_2->setText("人机对决");
+                ui->pushButton_3->setText("智能对决");
+            }
+        }
+    }
+}
+void MainWindow::flag()
+{
 
-
+    game->playEVE(clickPosX,clickPosY);
+    QSound::play(CHESS_PLAY);
+    isEnd();
+}
+void MainWindow::start_EVE()
+{
+    time1=new QTimer(this);   //设置定时器
+    connect(time1,SIGNAL(timeout()),this,SLOT(flag()));   //连接槽函数
+    time1->start(ai_time);   //设置ai思考时间
+}
 
 void MainWindow::on_pushButton_clicked()
 {
-
+     time1->stop();
      ui->centralWidget->setMouseTracking(true); //激活鼠标追踪
      setMouseTracking(true);  //激活整个窗体的鼠标追踪
      ui->pushButton->setMouseTracking(true); //进入某个按钮时，鼠标追踪属性失效，因此我们也需要激活该按钮的鼠标追踪功能
      game_type='s';  //双人模式类型
      init(game_type);  //初始化
      ui->pushButton->setText("重新开始:双人对决");
+     ui->pushButton_2->setText("人机对决");
+     ui->pushButton_3->setText("智能对决");
      //qDebug()<<"开始";
      update();
 }
 
 void MainWindow::on_pushButton_2_clicked()
 {
+    time1->stop();
     ui->centralWidget->setMouseTracking(true); //激活鼠标追踪
     setMouseTracking(true);  //激活整个窗体的鼠标追踪
     ui->pushButton_2->setMouseTracking(true); //进入某个按钮时，鼠标追踪属性失效，因此我们也需要激活该按钮的鼠标追踪功能
     game_type='r';
     init(game_type);
     ui->pushButton_2->setText("重新开始：人机对决");
+    ui->pushButton->setText("双人对决");
+    ui->pushButton_3->setText("智能对决");
     update();
 }
+
+void MainWindow::on_pushButton_3_clicked()
+{
+    this->setMouseTracking(false);
+    ui->pushButton_3->setText("重新开始：智能对决");
+    ui->pushButton->setText("双人对决");
+    ui->pushButton_2->setText("人机对决");
+    game_type='z'; //智能对决
+    init(game_type);
+    srand((unsigned)time(nullptr));
+    clickPosX=rand()%chessboard_size;
+    clickPosY=rand()%chessboard_size;
+    game->board[clickPosX][clickPosY]=1;
+    QSound::play(CHESS_PLAY);
+    game->player=!game->player;
+    start_EVE();//开始下棋
+    update();
+}
+
+

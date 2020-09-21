@@ -6,6 +6,8 @@
         <file>sound/start.wav</file>
         <file>Image/title.png</file>
         <file>Image/logo.png</file>
+        <file>image/7.png</file>
+        <file>image/0.jpg</file>
     </qresource>
     <qresource prefix="/">
         <file>sound/enderdz.wav</file>

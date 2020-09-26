@@ -1,4 +1,5 @@
 #include "mainwindow.h"
+#include"mainpage.h"
 #include "ui_mainwindow.h"
 #include<QPainter>
 #include<QPen>
@@ -20,6 +21,7 @@
 #include<qtimer.h>
 
 #define CHESS_PLAY  ":/new/prefix1/sound/chessone.wav"  //落子音的路径
+#define BUTTON_PLAY ":/new/prefix1/sound/button.wav"   //按钮提示音
 #define WIN_SOUND  ":/new/prefix1/sound/win.wav"   //获胜提示音路径
 #define LOSE_SOUND ":/new/prefix1/sound/lose.wav"   //失败提示音路径
 #define BACK_SOUND  "://sound/enderdz.wav"   //背景音乐路径
@@ -43,7 +45,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->pushButton->setText("双人对决");
     ui->pushButton->setFont(QFont("微软雅黑",10,700));
     ui->pushButton->setGeometry(1000,200,200,60); //设置按钮位置和尺寸
-    ui->pushButton_2->setText("人机对战");
+    ui->pushButton_2->setText("人机对决");
     ui->pushButton_2->setGeometry(1000,400,200,60);
     ui->pushButton_2->setFont(QFont("微软雅黑",10,700));
     ui->pushButton_3->setText("智能对决");
@@ -52,6 +54,12 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->pushButton->setFlat(true);  //设置按钮透明
     ui->pushButton_2->setFlat(true);
     ui->pushButton_3->setFlat(true);
+    back=new QPushButton(this);
+    back->setParent(this);
+    back->setGeometry(900,50,80,50);
+    back->setText("返回界面");
+    back->setFont(QFont("微软雅黑",8,300));
+    back->setFlat(true);
     QMenuBar *menubar=menuBar();  //设置菜单栏
     QMenu *menu_1=menubar->addMenu("六子棋"); //设置菜单
     QAction *action_0=menu_1->addAction("游戏简介");
@@ -101,9 +109,26 @@ MainWindow::MainWindow(QWidget *parent) :
     startsound->play();//播放背景音乐
     startsound->setLoops(-1); //设置单曲循环
     initgame();  //默认初始化
+    this->hide();
+    page.show();
+    connect(back,&QPushButton::clicked,this,&MainWindow::topage);   //连接信号和槽
+    void (mainpage::*myfun)()=&mainpage::mysignal;
+    connect(&page,myfun,this,&MainWindow::myslot);
+
 
 }
 
+void MainWindow::myslot()
+{
+    this->show();  //游戏界面显示
+    page.hide();   //子窗口隐藏
+}
+void MainWindow::topage()  //返回主界面
+{
+    QSound::play(BUTTON_PLAY);
+    this->hide();
+    page.show();
+}
 MainWindow::~MainWindow()
 {
     delete ui;
@@ -111,6 +136,11 @@ MainWindow::~MainWindow()
     {
         delete game;
         game = nullptr;
+    }
+    if(time1)
+    {
+        delete time1;
+        time1=nullptr;
     }
 }
 void MainWindow::paintEvent(QPaintEvent *)
@@ -139,9 +169,18 @@ void MainWindow::paintEvent(QPaintEvent *)
     {
         ui->pushButton_3->setFlat(true);
     }
+    if(back->underMouse())
+    {
+        back->setFlat(false);
+    }
+    else
+    {
+        back->setFlat(true);
+    }
     QPainter painter(this); //画家
     painter.drawPixmap(0,0,this->width(),this->height(),QPixmap(BACK_PNG));
     painter.setRenderHint(QPainter::Antialiasing, true); // 抗锯齿,防止图像走样
+    painter.drawPixmap(950,750,250,100,QPixmap(":/new/prefix1/image/title.png"));  //画logo
     QPen pen; //画笔
     pen.setWidth(2);  //画笔的线条宽度
     pen.setColor(Qt::black);
@@ -152,7 +191,6 @@ void MainWindow::paintEvent(QPaintEvent *)
         painter.drawLine(boundary+i*square_length,boundary,boundary+i*square_length,boundary+(chessboard_size-1)*square_length);//画竖线
 
     }
-    update();
     QBrush brush; //笔刷
     brush.setStyle(Qt::SolidPattern);
     if(clickPosX>=0&&clickPosX<chessboard_size&&clickPosY>=0&&clickPosY<chessboard_size&&game->state==1&&game->board[clickPosX][clickPosY]==0)  //范围内有效，绘制鼠标将要落子的标记点
@@ -191,7 +229,7 @@ void MainWindow::paintEvent(QPaintEvent *)
             }
         }
     }
-
+    update();
 
 }
 
@@ -200,48 +238,37 @@ void MainWindow::paintEvent(QPaintEvent *)
 
 void MainWindow::initgame()   //初始化
 {
+
         game=new Game;
+        time1=nullptr;
 }
 void MainWindow::init(char type)
 {
+    if(game)
+    {
+        delete game;
+    }
     game=new Game;
     game->game_type=type;
     game->state=1;
+    if(time1)
+    {
+        delete time1;
+        time1=nullptr;
+    }
     clickPosX=-1;
     clickPosY=-1;
     game->startgame(type);
     update();
 }
+
 void MainWindow::mouseMoveEvent(QMouseEvent *event)
 {
     //this->setMouseTracking(true);
     int x=event->x();
     int y=event->y();
     //qDebug()<<x<<y;
-    if(x>=1000&&x<=1200&&y>=200&&y<=260)
-    {
-        ui->pushButton->setFlat(false);
-    }
-    else
-    {
-        ui->pushButton->setFlat(true);
-    }
-    if(x>=1000&&x<=1200&&y>=400&&y<=460)
-    {
-        ui->pushButton->setFlat(false);
-    }
-    else
-    {
-        ui->pushButton->setFlat(true);
-    }
-    if(x>=1000&&x<=1200&&y>=600&&y<=660)
-    {
-        ui->pushButton->setFlat(false);
-    }
-    else
-    {
-        ui->pushButton->setFlat(true);
-    }
+
     //qDebug()<<x<<" "<<y;
     //保证鼠标在有效范围内,且棋盘边缘不落子
     if (x >= boundary-mouseOk  &&
@@ -347,6 +374,11 @@ void MainWindow::isEnd()
     {
         if(game->board[clickPosX][clickPosY]==1&&game->isJinShou(clickPosX,clickPosY)&&game->state==1)  //判断黑棋落子是否禁手
         {
+            if(time1)
+            {
+                time1->stop();
+                time1=nullptr;   //关闭定时器
+            }
             QMessageBox::StandardButton standar=QMessageBox::information(this,"游戏结束！","禁手！ White-player win！\n 点击Ok返回主界面！",QMessageBox::Ok);
             if(standar==QMessageBox::Ok)
             {
@@ -359,7 +391,11 @@ void MainWindow::isEnd()
         }
         else if(game->isWin(clickPosX,clickPosY)==true&&game->state==1)  //弹出提示框
         {
-
+            if(time1)
+            {
+                time1->stop();
+                time1=nullptr;   //关闭定时器
+            }
             QSound::play(WIN_SOUND);  //获胜提示音
             QString string;
             if(game->board[clickPosX][clickPosY]==1)
@@ -382,6 +418,11 @@ void MainWindow::isEnd()
         }
         else if(game->isHeQi()&&game->state==1)
         {
+            if(time1)
+            {
+                time1->stop();
+                time1=nullptr;   //关闭定时器
+            }
             game->state=0;
             QMessageBox::StandardButton standarbutton=QMessageBox::information(this,"游戏结束！","该局和棋啦！\n 点击Ok返回主界面",QMessageBox::Ok);
             if(standarbutton==QMessageBox::Ok)
@@ -411,7 +452,13 @@ void MainWindow::start_EVE()
 
 void MainWindow::on_pushButton_clicked()
 {
-     time1->stop();
+    QSound::play(BUTTON_PLAY);  //声效
+    if(time1)
+    {
+        time1->stop();
+        delete time1;
+        time1=nullptr;     //关闭定时器
+    }
      ui->centralWidget->setMouseTracking(true); //激活鼠标追踪
      setMouseTracking(true);  //激活整个窗体的鼠标追踪
      ui->pushButton->setMouseTracking(true); //进入某个按钮时，鼠标追踪属性失效，因此我们也需要激活该按钮的鼠标追踪功能
@@ -426,7 +473,13 @@ void MainWindow::on_pushButton_clicked()
 
 void MainWindow::on_pushButton_2_clicked()
 {
-    time1->stop();
+    QSound::play(BUTTON_PLAY);  //声效
+    if(time1)
+    {
+        time1->stop();
+        delete time1;
+        time1=nullptr;   //关闭定时器
+    }
     ui->centralWidget->setMouseTracking(true); //激活鼠标追踪
     setMouseTracking(true);  //激活整个窗体的鼠标追踪
     ui->pushButton_2->setMouseTracking(true); //进入某个按钮时，鼠标追踪属性失效，因此我们也需要激活该按钮的鼠标追踪功能
@@ -440,7 +493,8 @@ void MainWindow::on_pushButton_2_clicked()
 
 void MainWindow::on_pushButton_3_clicked()
 {
-    this->setMouseTracking(false);
+    QSound::play(BUTTON_PLAY);  //声效
+    this->setMouseTracking(false);  //关闭鼠标追踪
     ui->pushButton_3->setText("重新开始：智能对决");
     ui->pushButton->setText("双人对决");
     ui->pushButton_2->setText("人机对决");
@@ -455,5 +509,4 @@ void MainWindow::on_pushButton_3_clicked()
     start_EVE();//开始下棋
     update();
 }
-
 

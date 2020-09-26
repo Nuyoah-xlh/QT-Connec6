@@ -92,42 +92,7 @@ void Game::actionByAI(int &clickX,int &clickY)
 
     updateMap(clickX,clickY);  //更新棋盘数组
 }
-/**
-void Game::actionByAI_2(int &clickx,int &clicky)
-{
-    toScore_2();  //计算分值
-    //记录最大值的位置，若有多个点，记录最后一个搜索到的点
-    int maxScore = 0;
-    vector<pair<int, int>> maxPoints;   //使用vector容器放最大值所在位置
 
-    for (int row = 1; row < chessboard_size; row++)
-        for (int col = 1; col < chessboard_size; col++)
-        {
-            // 前提是这个坐标是空的
-            if (board[row][col] == 0)
-            {
-                if (score2[row][col] > maxScore)          // 找最大的数和坐标
-                {
-                    maxPoints.clear();       //发现新的最大值，清空容器内之前存储的所有元素
-                    maxScore = score2[row][col];
-                    maxPoints.push_back(make_pair(row, col));  //放入最新的最大值坐标
-                }
-                else if (score2[row][col] == maxScore)     // 如果有多个最大的数，都放到容器中
-                    maxPoints.push_back(make_pair(row, col));
-            }
-        }
-
-    // 随机落子，如果有多个点的话
-    srand((unsigned)time(0));   //随机种子
-    int index = rand() % maxPoints.size();  //随机下标，范围在容器容量内
-
-    pair<int, int> pointPair = maxPoints.at(index);  //取出该位置元素
-    clickx = pointPair.first;
-    clicky = pointPair.second;    //赋值
-
-    updateMap(clickx,clicky);  //更新棋盘数组
-}
-**/
 void Game::playEVE(int &clickx,int &clicky)  //ai对战ai
 {
       getScore();  //计分
@@ -641,10 +606,7 @@ void Game::clear2()
         for(int j=0;j<chessboard_size;j++)
         {
             score[i][j]=0;
-            if(game_type=='z')
-            {
-                score2[i][j]=0;
-            }
+
         }
     }
 }

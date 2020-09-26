@@ -7,6 +7,7 @@
 #include"Game.h"
 #include<QMouseEvent>
 #include<QEvent>
+#include"mainpage.h"
 
 
 
@@ -48,9 +49,15 @@ private slots:
     void on_pushButton_2_clicked();
 
     void on_pushButton_3_clicked();
+    void myslot();
 
+
+public slots:
+    void topage();
 private:
     Ui::MainWindow *ui;
+    mainpage page;
+    QPushButton  *back;
 };
 
 #endif // MAINWINDOW_H

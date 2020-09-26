@@ -4,10 +4,11 @@
         <file>sound/lose.wav</file>
         <file>sound/win.wav</file>
         <file>sound/start.wav</file>
-        <file>Image/title.png</file>
         <file>Image/logo.png</file>
         <file>image/7.png</file>
-        <file>image/0.jpg</file>
+        <file>image/title.png</file>
+        <file>sound/button.wav</file>
+        <file>image/1.png</file>
     </qresource>
     <qresource prefix="/">
         <file>sound/enderdz.wav</file>

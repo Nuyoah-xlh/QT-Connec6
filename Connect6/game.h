@@ -22,12 +22,12 @@ public:
     void getScore();
     int board[21][21];  //数组记录棋盘棋子，空白为0，白子为-1，黑子为1
     int score[21][21];  //数组记录棋盘落子得分
-    int score2[21][21];  //数组记录第二个得分情况
+
     void clear2();  //清空score数组
     int white,black;
     void playEVE(int &clickx,int &clicky);
     void actionByAI(int &clickX,int &clickY); //AI操作
-    void actionByAI_2(int &clickx,int &clicky);  //ai二号棋手
+
 
 };
 

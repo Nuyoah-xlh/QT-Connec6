@@ -30,8 +30,8 @@
 const int chessboard_size=21;  //棋盘线条数
 const int boundary=40;  //棋盘距离边缘的距离
 const int square_length=40;  //棋盘格子大小
-const int mouseOk=20; //鼠标的有效点击距离
-const int flag_length=10; //落子标记边长
+const int mouseOk=25; //鼠标的有效点击距离
+const int flag_length=11; //落子标记边长
 const int r=17; //棋子半径
 const int ai_time=700;  //模拟ai思考时间
 
@@ -60,6 +60,7 @@ MainWindow::MainWindow(QWidget *parent) :
     back->setText("返回界面");
     back->setFont(QFont("微软雅黑",8,300));
     back->setFlat(true);
+    on_jinshou=true;  //默认开启禁手
     QMenuBar *menubar=menuBar();  //设置菜单栏
     QMenu *menu_1=menubar->addMenu("六子棋"); //设置菜单
     QAction *action_0=menu_1->addAction("游戏简介");
@@ -87,6 +88,21 @@ MainWindow::MainWindow(QWidget *parent) :
             );   //弹出游戏规则内容
     QAction *action_2=menu_1->addAction("退出游戏");
     connect(action_2,QAction::triggered,this,QMainWindow::close);  //关闭程序
+    QMenu *Ban=menubar->addMenu("选项");
+    QAction *on=Ban->addAction("开启禁手");
+    QAction *off=Ban->addAction("关闭禁手");
+    connect(on,QAction::triggered,
+            [=]()
+            {
+               on_jinshou=true;
+            }
+    );
+    connect(off,QAction::triggered,
+            [=]()
+            {
+               on_jinshou=false;
+            }
+    );
     QMenu *menu_2=menubar->addMenu("了解更多");
     QAction *action_3=menu_2->addAction("关于版本");
     connect(action_3,QAction::triggered,
@@ -372,7 +388,7 @@ void MainWindow::isEnd()
 {
     if(clickPosX>=0&&clickPosX<chessboard_size&&clickPosY>=0&&clickPosY<chessboard_size&&game->board[clickPosX][clickPosY]!=0) //判断游戏输赢
     {
-        if(game->board[clickPosX][clickPosY]==1&&game->isJinShou(clickPosX,clickPosY)&&game->state==1)  //判断黑棋落子是否禁手
+        if(game->board[clickPosX][clickPosY]==1&&on_jinshou&&game->isJinShou(clickPosX,clickPosY)&&game->state==1)  //判断黑棋落子是否禁手
         {
             if(time1)
             {
@@ -501,8 +517,9 @@ void MainWindow::on_pushButton_3_clicked()
     game_type='z'; //智能对决
     init(game_type);
     srand((unsigned)time(nullptr));
-    clickPosX=rand()%chessboard_size;
-    clickPosY=rand()%chessboard_size;
+    //电脑首次落子尽量落在棋盘中间区域
+    clickPosX=chessboard_size/2+rand()%4;
+    clickPosY=chessboard_size/2+rand()%4;
     game->board[clickPosX][clickPosY]=1;
     QSound::play(CHESS_PLAY);
     game->player=!game->player;

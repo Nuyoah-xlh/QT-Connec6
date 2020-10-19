@@ -166,6 +166,7 @@ bool Game::isHeQi()
     }
     return true;
 }
+
 bool Game::isJinShou(int x,int y)  //发生四四禁手和五五禁手都属于禁手
 {
     int num=0,k=0;

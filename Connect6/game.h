@@ -14,6 +14,7 @@ public:
     void clear();  //清理棋盘
     bool isWin(int x,int y);//判断是否输赢
     bool isHeQi();  //判断是否和棋
+    //bool isJinShou_0(int x,int y); //对某点判断是否禁手
     bool isJinShou(int x,int y); //判断是否禁手
     void startgame(char type);  //开始游戏
     void updateMap(int x, int y); //更新棋盘

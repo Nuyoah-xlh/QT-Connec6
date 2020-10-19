@@ -31,6 +31,7 @@ public:
     int clickPosX, clickPosY; //鼠标将点击位置
     void initgame(); //初始化游戏
     char game_type; //游戏类型
+    bool on_jinshou;
     void init(char type);//初始化PVP
     void start_EVE();
     QPushButton pushButton; //人人

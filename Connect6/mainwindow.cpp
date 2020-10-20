@@ -30,7 +30,7 @@
 const int chessboard_size=21;  //棋盘线条数
 const int boundary=40;  //棋盘距离边缘的距离
 const int square_length=40;  //棋盘格子大小
-const int mouseOk=25; //鼠标的有效点击距离
+const int mouseOk=30; //鼠标的有效点击距离
 const int flag_length=11; //落子标记边长
 const int r=17; //棋子半径
 const int ai_time=700;  //模拟ai思考时间
@@ -351,10 +351,12 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event)
 
           if(game_type=='s'||game->player==true)
           {
+
               playByPerson();  //人执行
           }
            if(game_type=='r'&&game->player==false)  //ai操作
           {
+
               QTimer::singleShot(ai_time, this, SLOT(playByAI()));
           }
       }
@@ -497,7 +499,7 @@ void MainWindow::on_pushButton_2_clicked()
         time1=nullptr;   //关闭定时器
     }
     ui->centralWidget->setMouseTracking(true); //激活鼠标追踪
-    setMouseTracking(true);  //激活整个窗体的鼠标追踪
+    this->setMouseTracking(true);  //激活整个窗体的鼠标追踪
     ui->pushButton_2->setMouseTracking(true); //进入某个按钮时，鼠标追踪属性失效，因此我们也需要激活该按钮的鼠标追踪功能
     game_type='r';
     init(game_type);

@@ -65,8 +65,8 @@ void Game::actionByAI(int &clickX,int &clickY)
     int maxScore = 0;
     vector<pair<int, int>> maxPoints;   //使用vector容器放最大值所在位置
 
-    for (int row = 1; row < chessboard_size; row++)
-        for (int col = 1; col < chessboard_size; col++)
+    for (int row = 0; row < chessboard_size; row++)
+        for (int col = 0; col < chessboard_size; col++)
         {
             // 前提是这个坐标是空的
             if (board[row][col] == 0)
